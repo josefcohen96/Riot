@@ -1,4 +1,4 @@
-from Player import Player, Champ
+from Player import Player, Champ, server
 from Result import Result
 
 
@@ -6,6 +6,7 @@ class Match:
 
     def __init__(self, player_list: list = None):
 
+        self.already_pick_champs = []
         if player_list == None:
             self.player_list = []
         else:
@@ -21,8 +22,13 @@ class Match:
         cmd += f"team1:{self.team1}\n team2:{self.team2}"
         return cmd
 
-    def add_player(self, player: Player, champ: Champ, score: int, *args, **kwargs) -> Result:
-        self.player_list.append((player, champ, score))
+    def add_player(self, player: Player, *args, **kwargs) -> Result:
+        """Adding player to self.player_list , and generate a random champ for the player"""
+        playable_champion = player.champ_dict
+        random_champion = random.choice(list(playable_champion.keys()))
+        score = player.champ_dict[random_champion]
+        self.already_pick_champs.append(random_champion)
+        self.player_list.append((player, random_champion, score))
         return Result(error=Result.ErrorCode.ok)
 
     def remove_player(self, player: Player, *args, **kwargs) -> Result:
@@ -57,24 +63,22 @@ class Match:
 
 if __name__ == '__main__':
     import random
-    import json
-    import copy
 
-    f = open('champs.json')
-    # Read the JSON data
-    json_data = f.read()
-    f.close()
-    champ_dict = json.loads(json_data)
-    champ_dict_to_save = copy.copy(champ_dict)
-    match = Match()
     players = ["yosef", "PT", "matanel", "ohad", "yonatan", "shalom"]
 
-    for player in players:
-        champ = random.choice(list(champ_dict.keys()))
-        del champ_dict[champ]
-        account_id = random.randint(0, 2000)
-        player = Player(account_id=str(account_id), name=player, champ_dict=champ_dict_to_save)
-        match.add_player(player=player, champ=champ, score=player.champ_dict[champ])
+    yosef = Player(player=server.Players.Yosef)
+    matanel = Player(player=server.Players.Matanel)
+    ohad = Player(player=server.Players.Ohad)
+    gelkop = Player(player=server.Players.Gelkop)
+    piti = Player(player=server.Players.Piti)
+    peretz = Player(player=server.Players.Peretz)
 
-    result_obj = match.create_match()
-    print(match)
+    match_obj = Match()
+    match_obj.add_player(player=yosef)
+    match_obj.add_player(player=matanel)
+    match_obj.add_player(player=ohad)
+    match_obj.add_player(player=gelkop)
+    match_obj.add_player(player=piti)
+    match_obj.add_player(player=peretz)
+    match_obj.create_match()
+    print(match_obj)

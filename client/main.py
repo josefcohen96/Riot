@@ -2,7 +2,7 @@ import requests
 
 
 def get_api_key(*args, **kwargs):
-    return "RGAPI-272a652d-180b-42f6-9861-bc5af2f4975f"
+    return "RGAPI-4b2b5b37-648a-4905-8a8b-551568c0a423"
 
 
 def get_api(*args, **kwargs):
@@ -17,5 +17,4 @@ if __name__ == '__main__':
     match_data = result.json()
     print(result)
     print(match_data)
-    print(1)
     print(match_data.keys())

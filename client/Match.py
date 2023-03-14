@@ -1,11 +1,12 @@
 from Player import Player, Champ, server
 from Result import Result
+from server.MongoDB_connection import Players
 
 
 class Match:
 
-    def __init__(self, player_list: list = None):
-
+    def __init__(self, player_list: list = None, *args, **kwargs) -> None:
+        MongoDBConnection = server.MongoDBConnection()
         self.already_pick_champs = []
         if player_list == None:
             self.player_list = []
@@ -13,6 +14,10 @@ class Match:
             self.player_list = player_list
         self.team1 = None
         self.team2 = None
+        result_obj = MongoDBConnection.get_users_dict()
+        if result_obj.error != Result.ErrorCode.ok:
+            print("cant get user_dict")
+        self.user_dict = result_obj.value
 
     def __str__(self):
         cmd = ""
@@ -29,6 +34,7 @@ class Match:
         score = player.champ_dict[random_champion]
         self.already_pick_champs.append(random_champion)
         self.player_list.append((player, random_champion, score))
+        print("player %s is add to player list" % player)
         return Result(error=Result.ErrorCode.ok)
 
     def remove_player(self, player: Player, *args, **kwargs) -> Result:
@@ -60,25 +66,47 @@ class Match:
 
         return Result(error=Result.ErrorCode.ok)
 
+    def login(self, *args, **kwargs) -> Result:
+        # prompt user to enter their username and password
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
+
+        # check if username and password match
+        if username in self.user_dict and password == self.user_dict[username]:
+            print("Login successful!")
+        else:
+            print("Invalid username or password.")
+
+        return Result(error=Result.ErrorCode.ok, value=username)
+
 
 if __name__ == '__main__':
     import random
 
-    players = ["yosef", "PT", "matanel", "ohad", "yonatan", "shalom"]
-
-    yosef = Player(player=server.Players.Yosef)
-    matanel = Player(player=server.Players.Matanel)
-    ohad = Player(player=server.Players.Ohad)
-    gelkop = Player(player=server.Players.Gelkop)
-    piti = Player(player=server.Players.Piti)
-    peretz = Player(player=server.Players.Peretz)
+    # players = ["yosef", "PT", "matanel", "ohad", "yonatan", "shalom"]
+    # yosef = Player(player=server.Players.Yosef)
+    # matanel = Player(player=server.Players.Matanel)
+    # ohad = Player(player=server.Players.Ohad)
+    # gelkop = Player(player=server.Players.Gelkop)
+    # piti = Player(player=server.Players.Piti)
+    # peretz = Player(player=server.Players.Peretz)
 
     match_obj = Match()
-    match_obj.add_player(player=yosef)
-    match_obj.add_player(player=matanel)
-    match_obj.add_player(player=ohad)
-    match_obj.add_player(player=gelkop)
-    match_obj.add_player(player=piti)
-    match_obj.add_player(player=peretz)
+    for i in range(6):
+        result_obj = match_obj.login()
+        if result_obj.error != Result.ErrorCode.ok:
+            print("cant log in")
+            quit()
+        player_name = result_obj.value
+        added_players = []
+        if player_name in [player.value for player in Players]:
+            player_obj = Player(name=player_name.capitalize())
+            print(player_obj)
+            match_obj.add_player(player=player_obj)
+    # match_obj.add_player(player=matanel)
+    # match_obj.add_player(player=ohad)
+    # match_obj.add_player(player=gelkop)
+    # match_obj.add_player(player=piti)
+    # match_obj.add_player(player=peretz)
     match_obj.create_match()
     print(match_obj)

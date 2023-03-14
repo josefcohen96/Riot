@@ -1,21 +1,25 @@
 import pymongo
 
-from enum import Enum
+from enum import Enum, auto
 
 import sys
 from Result import Result
 
+
 class Players(Enum):
-    Piti = "piti"
-    Yosef = "yosef"
-    Matanel = "matanel"
-    Yonatan = "yonatan"
-    Gelkop = "gelkop"
-    Ohad = "ohad"
-    Shalom = "shalom"
-    Sapir = "sapir"
-    Sasson = "sasson"
-    Peretz = "peretz"
+    def _generate_next_value_(name, start, count, last_values):
+        return name.lower()
+
+    Piti = auto()
+    Yosef = auto()
+    Matanel = auto()
+    Yonatan = auto()
+    Gelkop = auto()
+    Ohad = auto()
+    Shalom = auto()
+    Sapir = auto()
+    Sasson = auto()
+    Peretz = auto()
 
 
 class MongoDBConnection:
@@ -27,8 +31,8 @@ class MongoDBConnection:
 
     def get_dictionary_champ(self, player_name: Players, *args, **kwargs) -> Result:
         """This function return Result.value is documents of champs_dict score for specific player"""
-        table_name = str(player_name.value) + "_table"
-        collection = self.db[table_name]
+        doc_name = str(player_name.value) + "_table"
+        collection = self.db[doc_name]
         documents = collection.find()
         champ_dict = {}
         for doc in documents:
@@ -37,6 +41,16 @@ class MongoDBConnection:
         del champ_dict["_id"]
 
         return Result(error=Result.ErrorCode.ok, value=champ_dict)
+
+    def get_users_dict(self, *args, **kwargs) -> Result:
+        doc_name = "users"
+        collection = self.db[doc_name]
+        documents = collection.find()
+        users_dict = {}
+        for doc in documents:
+            users_dict = doc
+
+        return Result(error=Result.ErrorCode.ok, value=users_dict)
 
 
 if __name__ == '__main__':

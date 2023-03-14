@@ -102,14 +102,19 @@ class Champ(Enum):
 
 class Player:
 
-    def __init__(self, player: server.Players, *args, **kwargs):
-        self.name = player.name
-        self.player = player
-        result_obj = self.update_champ_dict()
-        if result_obj.error != Result.ErrorCode.ok:
-            print("could not updated %s dict" % player.name)
+    def __init__(self, name:str, *args, **kwargs) -> None:
+        try:
+            player_enum = server.Players[name.capitalize()]
+            self.name = player_enum.name
+            self.player = player_enum
+            result_obj = self.update_champ_dict()
+            if result_obj.error != Result.ErrorCode.ok:
+                print("could not update %s dict" % player_enum.name)
+                quit()
+            self.champ_dict = result_obj.value
+        except KeyError:
+            print("%s is not a valid player name" % name)
             quit()
-        self.champ_dict = result_obj.value
 
     def __str__(self):
         return "name: {self.name} ".format(self=self)

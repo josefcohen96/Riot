@@ -66,18 +66,16 @@ class Match:
 
         return Result(error=Result.ErrorCode.ok)
 
-    def login(self, *args, **kwargs) -> Result:
-        # prompt user to enter their username and password
-        username = input("Enter your username: ")
-        password = input("Enter your password: ")
-
+    def login(self, username: str, password: str, *args, **kwargs) -> Result:
         # check if username and password match
         if username in self.user_dict and password == self.user_dict[username]:
             print("Login successful!")
+            if username in [player.value for player in Players]:
+                player_obj = Player(name=username.capitalize())
         else:
             print("Invalid username or password.")
 
-        return Result(error=Result.ErrorCode.ok, value=username)
+        return Result(error=Result.ErrorCode.ok, value=player_obj)
 
 
 if __name__ == '__main__':
@@ -97,12 +95,8 @@ if __name__ == '__main__':
         if result_obj.error != Result.ErrorCode.ok:
             print("cant log in")
             quit()
-        player_name = result_obj.value
-        added_players = []
-        if player_name in [player.value for player in Players]:
-            player_obj = Player(name=player_name.capitalize())
-            print(player_obj)
-            match_obj.add_player(player=player_obj)
+        # player_name = result_obj.value
+        # added_players = []
     # match_obj.add_player(player=matanel)
     # match_obj.add_player(player=ohad)
     # match_obj.add_player(player=gelkop)

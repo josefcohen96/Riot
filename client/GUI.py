@@ -3,10 +3,13 @@ import tkinter as tk
 from tkinter import messagebox
 from Result import Result
 from Player import Player
+import logging
 
 
 class LoginWindow:
     def __init__(self, master):
+        # requests.get()
+        # todo add connection to server
         self.master = master
         self.master.title("Login")
         self.master.geometry("300x200")
@@ -70,11 +73,8 @@ class MainWindow:
         self.player_list_label.pack()
 
     def join_room(self):
-        if self.player in self.match_obj.player_list:
-            messagebox.showinfo("Info", "You are already in the room.")
-            return
 
-        self.match_obj.player_list.append((self.player))
+        self.match_obj.player_list.append(self.player)
 
         # Update the player list label with the updated player list
         player_list_text = ""
@@ -98,15 +98,6 @@ class MainWindow:
             player_list_text += "Player  %d : %s\n" % (i, player)
         self.player_list_label.config(text=player_list_text)
 
-        # Enable the join button and disable the leave button
-        self.button_join_room.config(state="normal")
-        self.button_leave_room.config(state="disabled")
-
-        # Update the player list label with the updated player list
-        player_list_text = ""
-        for i, player in enumerate(self.match_obj.player_list, start=1):
-            player_list_text += "Player  %d : %s\n" % (i, player)
-
         # Disable the "Leave Room" button and enable the "Join Room" button
         self.button_leave_room.config(state=tk.DISABLED)
         self.button_join_room.config(state=tk.NORMAL)
@@ -117,6 +108,11 @@ class MainWindow:
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='MyApp.log', level=logging.DEBUG)
+    logging.info('Starting MyApp')
     root = tk.Tk()
     login_window = LoginWindow(root)
     root.mainloop()
+    # input("Press Enter to continue...")
+    logging.info('Exiting MyApp')
+

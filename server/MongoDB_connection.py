@@ -4,6 +4,7 @@ from enum import Enum, auto
 
 import sys
 from Result import Result
+from flask import Flask, jsonify, request
 
 
 class Players(Enum):
@@ -22,13 +23,18 @@ class Players(Enum):
     Peretz = auto()
 
 
+# app = Flask(__name__)
+
+
 class MongoDBConnection:
     def __init__(self):
         """This constructor create connection to TBC(pt_table) db """
         self.client = pymongo.MongoClient(
             "mongodb+srv://yotanel:1234@leagueoflegendsdb.qlqofrr.mongodb.net/?retryWrites=true&w=majority")
         self.db = self.client["pt_table"]
+        # app.route()
 
+    # @app.route('/champion_dict/<player_name>', methods=['GET'])
     def get_dictionary_champ(self, player_name: Players, *args, **kwargs) -> Result:
         """This function return Result.value is documents of champs_dict score for specific player"""
         doc_name = str(player_name.value) + "_table"
